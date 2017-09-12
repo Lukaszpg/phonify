@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import pro.lukasgorny.model.User;
 import pro.lukasgorny.repository.UserRepository;
 import pro.lukasgorny.repository.RoleRepository;
+import pro.lukasgorny.service.security.UserService;
 
 /**
  * Created by lukaszgo on 2017-05-25.
