@@ -15,7 +15,9 @@ import pro.lukasgorny.util.enums.ScreenSize;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ParserService {
@@ -77,19 +79,26 @@ public class ParserService {
     }
 
     private void createMultipleDevices(DeviceDto deviceDto) {
-        deviceDto.internalMemorySizes.forEach(memorySize -> {
-            Resource someDevice = model.createResource(Commons.RDF_NAMESPACE + deviceDto.deviceName.replaceAll(Commons.Regex.ALL_WHITESPACE, ""));
+        deviceDto.internalMemorySizes.keySet().forEach(memorySize -> {
+            Resource someDevice = model.createResource(Commons.RDF_NAMESPACE + deviceDto.deviceName.replaceAll(Commons.Regex.ALL_WHITESPACE, "")
+                    + deviceDto.internalMemorySizes.get(memorySize));
             someDevice.addProperty(JenaProperties.internalMemorySize, memorySize);
             someDevice.addProperty(JenaProperties.screenSize, deviceDto.screenSizeString);
-            someDevice.addProperty(JenaProperties.deviceName, deviceDto.deviceName);
+
+            if(deviceDto.internalMemoryUnit.equals("GB")) {
+                someDevice.addProperty(JenaProperties.deviceName, deviceDto.deviceName + " " + deviceDto.internalMemorySizes.get(memorySize) + deviceDto.internalMemoryUnit);
+            } else {
+                someDevice.addProperty(JenaProperties.deviceName, deviceDto.deviceName + " " + deviceDto.internalMemorySizes.get(memorySize));
+            }
         });
     }
 
     private void createSingleDevice(DeviceDto deviceDto) {
         Resource someDevice = model.createResource(Commons.RDF_NAMESPACE + deviceDto.deviceName.replaceAll(Commons.Regex.ALL_WHITESPACE, ""));
 
-        if(deviceDto.internalMemorySizes != null) {
-            someDevice.addProperty(JenaProperties.internalMemorySize, deviceDto.internalMemorySizes.get(0));
+        if (deviceDto.internalMemorySizes != null) {
+            String memoryToAdd = deviceDto.internalMemorySizes.keySet().stream().findFirst().get();
+            someDevice.addProperty(JenaProperties.internalMemorySize, memoryToAdd);
         }
 
         someDevice.addProperty(JenaProperties.screenSize, deviceDto.screenSizeString);
@@ -112,7 +121,7 @@ public class ParserService {
     private List<DeviceDto> setDevicesFields(List<DeviceDto> devices) {
         devices.forEach(deviceDto -> {
             deviceDto.screenSizeString = calculateScreenSize(deviceDto.screenSizeString);
-            deviceDto.internalMemorySizes = prepareInternalMemoryList(deviceDto.internalMemorySizeString);
+            deviceDto = prepareInternalMemoryList(deviceDto);
         });
         return devices;
     }
@@ -129,7 +138,8 @@ public class ParserService {
         }
     }
 
-    private List<String> prepareInternalMemoryList(String internalMemorySizeString) {
+    private DeviceDto prepareInternalMemoryList(DeviceDto deviceDto) {
+        String internalMemorySizeString  = deviceDto.internalMemorySizeString;
         if (internalMemorySizeString != null) {
             internalMemorySizeString = internalMemorySizeString.replaceAll(Commons.Regex.INTERNAL_MEMORY_SIZE, "");
 
@@ -138,20 +148,21 @@ public class ParserService {
             internalMemorySizeString = internalMemorySizeString.replaceAll(Commons.Regex.INTERNAL_MEMORY_SIZE_UNIT, "");
 
             String[] memorySizes = internalMemorySizeString.split("/");
-            List<String> resultList = new ArrayList<>();
+            Map<String, String> resultMap = new HashMap<>();
 
-            for (int i = 0; i < memorySizes.length; i++) {
-                if(shouldCalculateAsGigabytes) {
-                    resultList.add(calculateInternalMemorySizeAsGigabytes(Double.valueOf(memorySizes[i])));
+            for (String memorySize : memorySizes) {
+                if (shouldCalculateAsGigabytes) {
+                    resultMap.put(calculateInternalMemorySizeAsGigabytes(Double.valueOf(memorySize)), memorySize);
+                    deviceDto.internalMemoryUnit = "GB";
                 } else {
-                    resultList.add(calculateInternalMemorySizeAsMegabytes(Double.valueOf(memorySizes[i])));
+                    resultMap.put(calculateInternalMemorySizeAsMegabytes(Double.valueOf(memorySize)), memorySize);
                 }
             }
 
-            return resultList;
+            deviceDto.internalMemorySizes = resultMap;
         }
 
-        return null;
+        return deviceDto;
     }
 
     private boolean shouldCalcateAsGigabytes(String memoryString) {

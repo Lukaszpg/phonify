@@ -3,6 +3,7 @@ package pro.lukasgorny.model.dto;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lukaszgo on 2017-09-12.
@@ -18,5 +19,7 @@ public class DeviceDto {
     @SerializedName("internal")
     public String internalMemorySizeString;
 
-    public List<String> internalMemorySizes;
+    public Map<String, String> internalMemorySizes;
+
+    public String internalMemoryUnit;
 }

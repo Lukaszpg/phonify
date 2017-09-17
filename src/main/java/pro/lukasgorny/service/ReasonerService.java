@@ -1,19 +1,12 @@
 package pro.lukasgorny.service;
 
-import org.apache.jena.Jena;
 import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.springframework.stereotype.Service;
 import pro.lukasgorny.model.dto.SurveyDto;
 import pro.lukasgorny.util.Commons;
-import pro.lukasgorny.util.JenaProperties;
-import pro.lukasgorny.util.enums.InternalMemorySize;
-import pro.lukasgorny.util.enums.ScreenSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +17,15 @@ public class ReasonerService {
     private Model model;
     private List<String> results;
     private SurveyDto criterias;
-    private List<Resource> devices;
+    private Query query;
+    private QueryExecution queryExecution;
+    private ResultSet resultSet;
 
     public List<String> execute() {
         initialize();
         readModelFromFile();
-        getPhonesByFilters();
+        prepareQuery();
+        getPhonesByCriteria();
 
         return results;
     }
@@ -42,45 +38,36 @@ public class ReasonerService {
         model = RDFDataMgr.loadModel(Commons.RDF_FILENAME, Lang.RDFXML);
     }
 
-    private void getPhonesByFilters() {
-        /*if (shouldFilterByScreenSize()) {
-            devices = model.listResourcesWithProperty(JenaProperties.screenSize,
-                    model.createLiteral(ScreenSize.valueOf(criterias.getScreenSize()).name())).toList();
-        }
+    private void prepareQuery() {
+        prepareQueryBody();
+        query = QueryFactory.create(prepareQueryBody());
+        queryExecution = QueryExecutionFactory.create(query, model);
+    }
 
-        if (shouldFilterByInternalMemorySize()) {
-            devices = model.listResourcesWithProperty(JenaProperties.internalMemorySize,
-                    model.createLiteral(InternalMemorySize.valueOf(criterias.getInternalMemorySize()).name())).toList();
-        }*/
-
+    private Query prepareQueryBody() {
         String queryString = "PREFIX feature: <https://lukasgorny.pro/devices#>" +
-                "SELECT ?x WHERE {" +
-                "?x feature:device-name ?name ." +
-                "}";
+                "SELECT ?device WHERE { " +
+                "?device feature:device-name ?deviceName ." +
+                "OPTIONAL { ?x feature:screen-size ?screenSize . } " +
+                "OPTIONAL { ?y feature:internal-memory-size ?internalMemorySize . } " +
+                "}" +
+                "GROUP BY ?device";
 
-        Query query = QueryFactory.create(queryString);
-        QueryExecution queryExecution = QueryExecutionFactory.create(query, model);
+        ParameterizedSparqlString parameterizedSparqlString = new ParameterizedSparqlString();
+        parameterizedSparqlString.setCommandText(queryString);
+        parameterizedSparqlString.setLiteral("screenSize", criterias.getScreenSize());
+        parameterizedSparqlString.setLiteral("internalMemorySize", criterias.getInternalMemorySize());
 
+        return parameterizedSparqlString.asQuery();
+    }
+
+    private void getPhonesByCriteria() {
         try {
-            ResultSet resultSet = queryExecution.execSelect();
+            resultSet = queryExecution.execSelect();
             ResultSetFormatter.out(System.out, resultSet, query);
         } finally {
             queryExecution.close();
         }
-
-        devices.forEach(device -> results.add(device.getProperty(JenaProperties.deviceName).getLiteral().toString()));
-    }
-
-    private boolean shouldFilterByScreenSize() {
-        return criterias.getScreenSize() != null && !criterias.getScreenSize().isEmpty();
-    }
-
-    private boolean shouldFilterByInternalMemorySize() {
-        return criterias.getInternalMemorySize() != null && !criterias.getInternalMemorySize().isEmpty();
-    }
-
-    public SurveyDto getCriterias() {
-        return criterias;
     }
 
     public void setCriterias(SurveyDto criterias) {
