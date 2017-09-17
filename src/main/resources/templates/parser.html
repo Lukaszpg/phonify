@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Projekt ZTI</title>
+    <title>Parser</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -12,18 +12,8 @@
 
 <body>
 <div class="container">
-    <p th:text="${'Hello ' + userName}"></p>
-
-    <div sec:authorize="hasAuthority('USER')">
-        USER
-    </div>
-    <div sec:authorize="hasAuthority('ADMIN')">
-        ADMIN
-    </div>
-    <br />
-    <div sec:authorize="isAuthenticated()">
-        Widzisz to, bo jesteś zalogowany.
-    </div>
+    <h1>Very nice, great success!</h1><br/><br/>
+    <img src="/img/borat.jpg"/>
 </div>
 </body>
 </html>

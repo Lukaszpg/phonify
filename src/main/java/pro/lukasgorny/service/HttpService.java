@@ -1,4 +1,7 @@
-package pro.lukasgorny.service.http;
+package pro.lukasgorny.service;
+
+import org.springframework.stereotype.Service;
+import pro.lukasgorny.util.Commons;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,9 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import org.springframework.stereotype.Component;
 
-@Component
+@Service
 public class HttpService {
 
     private final String REQUEST_TYPE = "GET";
@@ -17,14 +19,10 @@ public class HttpService {
     private final String REQUEST_HEADER_TOKEN = "?token=";
     private final String USER_AGENT = "Mozilla/5.0";
 
+    private String apiKey = Commons.FONOAPI_TOKEN;
 
     private URL url;
-    private String apiKey;
     private HttpURLConnection connection;
-
-    public HttpService(final String apiKey) {
-        this.apiKey = apiKey;
-    }
 
     public String sendGetRequest(final String urlString) throws IOException {
         prepareURL(urlString);

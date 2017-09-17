@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Projekt ZTI</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <form action="#" th:action="@{/result}" th:object="${survey}" method="post">
+        <p>1. Rozmiar ekranu</p>
+        <input type="radio" th:field="*{screenSize}" th:value="small" />
+        <label th:for="${#ids.next('screenSize')}" th:text="Mały">Mały</label>
+        <input type="radio" th:field="*{screenSize}" th:value="medium" />
+        <label th:for="${#ids.next('screenSize')}" th:text="Średni">Średni</label>
+        <input type="radio" th:field="*{screenSize}" th:value="big" />
+        <label th:for="${#ids.next('screenSize')}" th:text="Duży">Duży</label><br/>
+        <p>2. Rozmiar pamięci wewnętrznej</p>
+        <input type="radio" th:field="*{internalMemorySize}" th:value="small" />
+        <label th:for="${#ids.next('internalMemorySize')}" th:text="Mała">Mała</label>
+        <input type="radio" th:field="*{internalMemorySize}" th:value="medium" />
+        <label th:for="${#ids.next('internalMemorySize')}" th:text="Średnia">Średnia</label>
+        <input type="radio" th:field="*{internalMemorySize}" th:value="big" />
+        <label th:for="${#ids.next('internalMemorySize')}" th:text="Duża">Duża</label>
+        <p><input type="submit" value="Submit"/> <input type="reset" value="Reset"/></p>
+    </form>
+</div>
+</body>
+</html>

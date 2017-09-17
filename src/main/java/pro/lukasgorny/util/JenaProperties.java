@@ -11,10 +11,12 @@ public class JenaProperties {
     private static Model model = ModelFactory.createDefaultModel();
     public static Property deviceName;
     public static Property screenSize;
+    public static Property internalMemorySize;
 
     static {
         deviceName = model.createProperty(Commons.RDF_NAMESPACE, "device-name");
         screenSize = model.createProperty(Commons.RDF_NAMESPACE, "screen-size");
+        internalMemorySize = model.createProperty(Commons.RDF_NAMESPACE, "internal-memory-size");
     }
 
 }
