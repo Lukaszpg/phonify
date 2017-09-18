@@ -95,6 +95,13 @@
             <artifactId>gson</artifactId>
             <version>2.8.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-querybuilder</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -108,8 +115,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <warName>${name}</warName>
-                    <outputDirectory>D:\Tomcat\webapps</outputDirectory>
+                    <outputDirectory>C:\tomcat\webapps</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

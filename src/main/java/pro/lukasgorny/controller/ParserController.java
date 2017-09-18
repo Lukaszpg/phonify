@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import pro.lukasgorny.model.dto.ImportStatsDto;
 import pro.lukasgorny.service.ParserService;
 
 import java.io.IOException;
@@ -24,9 +26,10 @@ public class ParserController {
     @GetMapping("/parser")
     public ModelAndView launch() throws IOException {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("parser");
 
-        parserService.parse();
+        ImportStatsDto importStatsDto = parserService.parse();
+        modelAndView.setViewName("parser");
+        modelAndView.addObject("stats", importStatsDto);
 
         return modelAndView;
     }

@@ -4,16 +4,51 @@
 
 <head>
     <title>Parser</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" />
+    <meta charset="utf-8"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="all"
+          href="/css/main.css" th:href="@{/css/main.css}"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-<div class="container">
-    <h1>Very nice, great success!</h1><br/><br/>
-    <img src="/img/borat.jpg"/>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" th:href="@{/}">Projekt ZTI</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a th:href="@{/}">Home</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-12">
+            <div class="page-header">
+                <h1 th:text="#{import.stats}"></h1>
+            </div>
+            <div class="form-group">
+                <label for="importSuccess" th:text="#{label.import.state}"></label>
+                <span id="importSuccess" class="label label-success">Sukces</span>
+            </div>
+            <div class="form-group">
+                <label for="executionTime" th:text="#{label.execution.time}"></label>
+                <span id="executionTime" th:text="#{label.execution.time.details(${stats.importTime})}"></span>
+            </div>
+            <div class="form-group">
+                <label for="count" th:text="#{label.import.count}"></label>
+                <span id="count" th:text="#{label.import.count.details(${stats.count})}"></span>
+            </div>
+        </div>
+    </div>
 </div>
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted margin-top-20">&copy Copyright 2017 Adam Bojarski, Łukasz Górny</p>
+    </div>
+</footer>
 </body>
 </html>

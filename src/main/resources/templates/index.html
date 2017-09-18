@@ -4,31 +4,61 @@
 
 <head>
     <title>Projekt ZTI</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
+    <meta charset="utf-8" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="all"
+          href="/css/main.css" th:href="@{/css/main.css}"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-<div class="container">
-    <form action="#" th:action="@{/result}" th:object="${survey}" method="post">
-        <p>1. Rozmiar ekranu</p>
-        <input type="radio" th:field="*{screenSize}" th:value="small" />
-        <label th:for="${#ids.next('screenSize')}" th:text="Mały">Mały</label>
-        <input type="radio" th:field="*{screenSize}" th:value="medium" />
-        <label th:for="${#ids.next('screenSize')}" th:text="Średni">Średni</label>
-        <input type="radio" th:field="*{screenSize}" th:value="big" />
-        <label th:for="${#ids.next('screenSize')}" th:text="Duży">Duży</label><br/>
-        <p>2. Rozmiar pamięci wewnętrznej</p>
-        <input type="radio" th:field="*{internalMemorySize}" th:value="small" />
-        <label th:for="${#ids.next('internalMemorySize')}" th:text="Mała">Mała</label>
-        <input type="radio" th:field="*{internalMemorySize}" th:value="medium" />
-        <label th:for="${#ids.next('internalMemorySize')}" th:text="Średnia">Średnia</label>
-        <input type="radio" th:field="*{internalMemorySize}" th:value="big" />
-        <label th:for="${#ids.next('internalMemorySize')}" th:text="Duża">Duża</label>
-        <p><input type="submit" value="Submit"/> <input type="reset" value="Reset"/></p>
-    </form>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" th:href="@{/}">Projekt ZTI</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a th:href="@{/}">Home</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-12">
+            <div class="page-header">
+                <h1>Wybór preferencji użytkownika</h1>
+            </div>
+            <form action="#" class="form-horizontal" th:action="@{/result}" th:object="${survey}" method="post">
+                <p>1. Rozmiar ekranu</p>
+                <input type="radio" th:field="*{screenSize}" th:value="small" th:required="required"/>
+                <label th:for="${#ids.next('screenSize')}" th:text="Mały">Mały</label>
+                <input type="radio" th:field="*{screenSize}" th:value="medium"/>
+                <label th:for="${#ids.next('screenSize')}" th:text="Średni">Średni</label>
+                <input type="radio" th:field="*{screenSize}" th:value="big"/>
+                <label th:for="${#ids.next('screenSize')}" th:text="Duży">Duży</label><br/>
+                <p>2. Rozmiar pamięci wewnętrznej</p>
+                <input type="radio" th:field="*{internalMemorySize}" th:value="small" th:required="required"/>
+                <label th:for="${#ids.next('internalMemorySize')}" th:text="Mała">Mała</label>
+                <input type="radio" th:field="*{internalMemorySize}" th:value="medium"/>
+                <label th:for="${#ids.next('internalMemorySize')}" th:text="Średnia">Średnia</label>
+                <input type="radio" th:field="*{internalMemorySize}" th:value="big"/>
+                <label th:for="${#ids.next('internalMemorySize')}" th:text="Duża">Duża</label>
+                <p>3. Czy urządzenie powinno posiadać jack 3.5 mm?</p>
+                <input type="radio" th:field="*{musicJack}" th:value="yes" th:required="required"/>
+                <label th:for="${#ids.next('musicJack')}" th:text="Tak"></label>
+                <input type="radio" th:field="*{musicJack}" th:value="no"/>
+                <label th:for="${#ids.next('musicJack')}" th:text="Nie"></label>
+                <p><input class="btn btn-lg btn-success pull-right margin-left-5" type="submit" value="Wyślij"/> <input class="btn btn-primary btn-lg pull-right" type="reset"
+                                                                                               value="Wyczyść"/></p>
+            </form>
+        </div>
+    </div>
 </div>
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted margin-top-20">&copy Copyright 2017 Adam Bojarski, Łukasz Górny</p>
+    </div>
+</footer>
 </body>
 </html>

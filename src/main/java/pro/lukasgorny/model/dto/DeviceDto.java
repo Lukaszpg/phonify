@@ -19,7 +19,17 @@ public class DeviceDto {
     @SerializedName("internal")
     public String internalMemorySizeString;
 
+    @SerializedName("_3_5mm_jack_")
+    public String musicJack;
+
+    @SerializedName("primary_")
+    public String primaryCamera;
+
+    public String hasDualCamera;
+
     public Map<String, String> internalMemorySizes;
 
     public String internalMemoryUnit;
+
+    public String screenSizeNumeric;
 }

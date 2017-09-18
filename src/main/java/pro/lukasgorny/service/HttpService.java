@@ -17,6 +17,7 @@ public class HttpService {
     private final String REQUEST_TYPE = "GET";
     private final String REQUEST_HEADER_USER_AGENT = "User-Agent";
     private final String REQUEST_HEADER_TOKEN = "?token=";
+    private final String REQUEST_HEADER_BRAND = "&brand=";
     private final String USER_AGENT = "Mozilla/5.0";
 
     private String apiKey = Commons.FONOAPI_TOKEN;
@@ -24,16 +25,16 @@ public class HttpService {
     private URL url;
     private HttpURLConnection connection;
 
-    public String sendGetRequest(final String urlString) throws IOException {
-        prepareURL(urlString);
+    public String sendGetRequest(String brand) throws IOException {
+        prepareURL(Commons.FONOAPI_GET_LATEST_LINK, brand);
         prepareAndOpenConnection();
         setRequestProperties();
 
         return processResponse();
     }
 
-    private void prepareURL(String urlString) throws MalformedURLException {
-        urlString += REQUEST_HEADER_TOKEN + apiKey;
+    private void prepareURL(String urlString, String brand) throws MalformedURLException {
+        urlString += REQUEST_HEADER_TOKEN + apiKey + REQUEST_HEADER_BRAND + brand;
         url = new URL(urlString);
     }
 

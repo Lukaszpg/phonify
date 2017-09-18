@@ -4,19 +4,58 @@
 
 <head>
     <title>Parser</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
+    <meta charset="utf-8" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="all"
+          href="/css/main.css" th:href="@{/css/main.css}"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-<div class="container">
-    <h1>Wyniki</h1>
-    <ul th:each="phone : ${results}">
-        <li th:text="${phone}"></li>
-    </ul>
-    </ul>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" th:href="@{/}">Projekt ZTI</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a th:href="@{/}">Home</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-12">
+            <div class="page-header">
+                <h1 th:text="#{header.results}"></h1>
+            </div>
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <th th:text="#{table.header.number}"></th>
+                    <th th:text="#{table.header.model}"></th>
+                    <th th:text="#{table.header.screen.size}"></th>
+                    <th th:text="#{table.header.memory.size}"></th>
+                    <th th:text="#{table.header.jack}"></th>
+                    <th th:text="#{table.header.search}"></th>
+                </thead>
+                <tbody>
+                    <tr th:each="phone,iter : ${devices}">
+                        <td class="col-xs-1" th:text="${iter.index + 1}"></td>
+                        <td th:text="${phone.deviceName}"></td>
+                        <td th:text="${phone.screenSize}"></td>
+                        <td th:text="${phone.memorySize} + ${phone.memoryUnit}"></td>
+                        <td th:text="#{label. + ${phone.musicJack}}"></td>
+                        <td><a target="_blank" th:href="@{http://www.google.com/search?q={query} + {shopLabel}(query=${phone.deviceName}, shopLabel = 'sklep')}" th:text="#{label.search.google}"></a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted margin-top-20">&copy Copyright 2017 Adam Bojarski, Łukasz Górny</p>
+    </div>
+</footer>
 </body>
 </html>
