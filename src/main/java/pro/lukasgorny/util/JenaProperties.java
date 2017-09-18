@@ -18,6 +18,7 @@ public class JenaProperties {
     public static Property musicJack;
     public static Property primaryCameraQuality;
     public static Property hasDualCamera;
+    public static Property hasDualSim;
 
     static {
         deviceName = model.createProperty(Commons.RDF_NAMESPACE, "device-name");
@@ -29,6 +30,7 @@ public class JenaProperties {
         musicJack = model.createProperty(Commons.RDF_NAMESPACE, "music-jack");
         primaryCameraQuality = model.createProperty(Commons.RDF_NAMESPACE, "primary-camera-quality");
         hasDualCamera = model.createProperty(Commons.RDF_NAMESPACE, "has-dual-camera");
+        hasDualSim = model.createProperty(Commons.RDF_NAMESPACE, "has-dual-sim");
     }
 
 }

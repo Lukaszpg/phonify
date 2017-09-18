@@ -20,6 +20,7 @@
         </div>
         <ul class="nav navbar-nav">
             <li class="active"><a th:href="@{/}">Home</a></li>
+            <li class="active"><a th:href="@{/parser}">Parser</a></li>
         </ul>
     </div>
 </nav>
@@ -36,6 +37,9 @@
                     <th th:text="#{table.header.screen.size}"></th>
                     <th th:text="#{table.header.memory.size}"></th>
                     <th th:text="#{table.header.jack}"></th>
+                    <th th:text="#{table.header.has_dual_camera}"></th>
+                    <th th:text="#{table.header.primary_camera_quality}"></th>
+                    <th th:text="#{table.header.has_dual_sim}"></th>
                     <th th:text="#{table.header.search}"></th>
                 </thead>
                 <tbody>
@@ -45,6 +49,9 @@
                         <td th:text="${phone.screenSize}"></td>
                         <td th:text="${phone.memorySize} + ${phone.memoryUnit}"></td>
                         <td th:text="#{label. + ${phone.musicJack}}"></td>
+                        <td th:text="#{label. + ${phone.hasDualCamera}}"></td>
+                        <td th:text="#{label. + ${phone.primaryCameraQuality}}"></td>
+                        <td th:text="#{label. + ${phone.hasDualSim}}"></td>
                         <td><a target="_blank" th:href="@{http://www.google.com/search?q={query} + {shopLabel}(query=${phone.deviceName}, shopLabel = 'sklep')}" th:text="#{label.search.google}"></a></td>
                     </tr>
                 </tbody>

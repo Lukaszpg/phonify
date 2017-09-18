@@ -9,6 +9,9 @@ public class ResultDeviceDto {
     private String memorySize;
     private String memoryUnit;
     private String musicJack;
+    private String hasDualCamera;
+    private String primaryCameraQuality;
+    private String hasDualSim;
 
     public String getScreenSize() {
         return screenSize;
@@ -48,5 +51,29 @@ public class ResultDeviceDto {
 
     public void setMusicJack(String musicJack) {
         this.musicJack = musicJack;
+    }
+
+    public String getHasDualCamera() {
+        return hasDualCamera;
+    }
+
+    public void setHasDualCamera(String hasDualCamera) {
+        this.hasDualCamera = hasDualCamera;
+    }
+
+    public String getPrimaryCameraQuality() {
+        return primaryCameraQuality;
+    }
+
+    public void setPrimaryCameraQuality(String primaryCameraQuality) {
+        this.primaryCameraQuality = primaryCameraQuality;
+    }
+
+    public String getHasDualSim() {
+        return hasDualSim;
+    }
+
+    public void setHasDualSim(String hasDualSim) {
+        this.hasDualSim = hasDualSim;
     }
 }

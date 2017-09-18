@@ -1,16 +1,13 @@
 package pro.lukasgorny.service;
 
-import java.io.IOException;
-import java.util.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import javafx.scene.Camera;
 import pro.lukasgorny.model.dto.DeviceDto;
 import pro.lukasgorny.model.dto.ImportStatsDto;
 import pro.lukasgorny.util.Commons;
@@ -20,6 +17,11 @@ import pro.lukasgorny.util.enums.CameraMatrix;
 import pro.lukasgorny.util.enums.InternalMemorySize;
 import pro.lukasgorny.util.enums.ScreenSize;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class ParserService {
 
@@ -27,7 +29,7 @@ public class ParserService {
     private FileService fileService;
     private long startTime;
     private long endTime;
-    private Integer parseCount = 0;
+    private Integer parseCount;
 
     private List<DeviceDto> devices;
     private String response;
@@ -42,6 +44,7 @@ public class ParserService {
     }
 
     public ImportStatsDto parse() throws IOException {
+        initialize();
         startTimer();
         createJenaModel();
         getDevicesFromMultipleBrands();
@@ -50,6 +53,10 @@ public class ParserService {
         prepareReturnDto();
 
         return importStatsDto;
+    }
+
+    private void initialize() {
+        parseCount = 0;
     }
 
     private void getDevicesFromMultipleBrands() {
@@ -87,14 +94,20 @@ public class ParserService {
 
     private void populateModel() {
         devices.forEach(deviceDto -> {
-            if (deviceDto.internalMemorySizes != null && deviceDto.internalMemorySizes.size() > 1) {
-                createMultipleDevices(deviceDto);
-            } else {
-                createSingleDevice(deviceDto);
-            }
+            if(!isDeviceDiscontinued(deviceDto)) {
+                if (deviceDto.internalMemorySizes != null && deviceDto.internalMemorySizes.size() > 1) {
+                    createMultipleDevices(deviceDto);
+                } else {
+                    createSingleDevice(deviceDto);
+                }
 
-            parseCount++;
+                parseCount++;
+            }
         });
+    }
+
+    private boolean isDeviceDiscontinued(DeviceDto deviceDto) {
+        return StringUtils.containsIgnoreCase("discontinued", deviceDto.status);
     }
 
     private void createMultipleDevices(DeviceDto deviceDto) {
@@ -106,6 +119,10 @@ public class ParserService {
             if(deviceDto.primaryCamera != null) {
                 someDevice.addProperty(JenaProperties.hasDualCamera, deviceDto.hasDualCamera);
                 someDevice.addProperty(JenaProperties.primaryCameraQuality, deviceDto.primaryCamera);
+            }
+
+            if(deviceDto.dualSim != null) {
+                someDevice.addProperty(JenaProperties.hasDualSim, deviceDto.dualSim);
             }
 
             someDevice.addProperty(JenaProperties.musicJack, deviceDto.musicJack);
@@ -138,6 +155,10 @@ public class ParserService {
         if(deviceDto.primaryCamera != null) {
             someDevice.addProperty(JenaProperties.hasDualCamera, deviceDto.hasDualCamera);
             someDevice.addProperty(JenaProperties.primaryCameraQuality, deviceDto.primaryCamera);
+        }
+
+        if(deviceDto.dualSim != null) {
+            someDevice.addProperty(JenaProperties.hasDualSim, deviceDto.dualSim);
         }
 
         someDevice.addProperty(JenaProperties.musicJack, deviceDto.musicJack);
@@ -173,9 +194,17 @@ public class ParserService {
                 deviceDto.primaryCamera = calculatePrimaryCameraMatrixSize(deviceDto.primaryCamera);
             }
 
+            if(deviceDto.dualSim != null) {
+                deviceDto.dualSim = doesDeviceHaveDualSim(deviceDto.dualSim);
+            }
+
             deviceDto = prepareInternalMemoryList(deviceDto);
         });
         return devices;
+    }
+
+    private String doesDeviceHaveDualSim(String sim) {
+        return StringUtils.containsIgnoreCase("dual", sim) ? "yes" : "no";
     }
 
     private String getScreenSizeNumeric(String screenSizeString) {
@@ -189,7 +218,7 @@ public class ParserService {
 
         if (screenSizeDouble <= 3.0) {
             return ScreenSize.small.name();
-        } else if (screenSizeDouble > 3.0 && screenSizeDouble < 5.0) {
+        } else if (screenSizeDouble > 3.0 && screenSizeDouble <= 4.5) {
             return ScreenSize.medium.name();
         } else {
             return ScreenSize.big.name();
@@ -197,11 +226,11 @@ public class ParserService {
     }
 
     private String doesDeviceHaveJack(String musicJack) {
-        return musicJack.contains("Yes") ? "yes" : "no";
+        return StringUtils.containsIgnoreCase(musicJack, "yes") ? "yes" : "no";
     }
 
     private String doesDeviceHaveDualCamera(String primaryCamera) {
-        return primaryCamera.contains("Dual") ? "yes" : "no";
+        return StringUtils.containsIgnoreCase("dual", primaryCamera) ? "yes" : "no";
     }
 
     private DeviceDto prepareInternalMemoryList(DeviceDto deviceDto) {
@@ -209,7 +238,7 @@ public class ParserService {
         if (internalMemorySizeString != null) {
             String[] memorySplitted = internalMemorySizeString.split(",");
             internalMemorySizeString = memorySplitted[0];
-            boolean shouldCalculateAsGigabytes = shouldCalcateAsGigabytes(internalMemorySizeString);
+            boolean shouldCalculateAsGigabytes = shouldCalculateAsGigabytes(internalMemorySizeString);
             internalMemorySizeString = internalMemorySizeString.replaceAll(Commons.Regex.INTERNAL_MEMORY_SIZE_UNIT, "");
 
             String[] memorySizes = internalMemorySizeString.split("/");
@@ -231,7 +260,7 @@ public class ParserService {
         return deviceDto;
     }
 
-    private boolean shouldCalcateAsGigabytes(String memoryString) {
+    private boolean shouldCalculateAsGigabytes(String memoryString) {
         return memoryString.contains("GB");
     }
 

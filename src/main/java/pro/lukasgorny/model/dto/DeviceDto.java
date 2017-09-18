@@ -25,6 +25,12 @@ public class DeviceDto {
     @SerializedName("primary_")
     public String primaryCamera;
 
+    @SerializedName("status")
+    public String status;
+
+    @SerializedName("sim")
+    public String dualSim;
+
     public String hasDualCamera;
 
     public Map<String, String> internalMemorySizes;
