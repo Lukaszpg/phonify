@@ -1,11 +1,11 @@
 package pro.lukasgorny.service;
 
-import org.apache.jena.rdf.model.Model;
-import org.springframework.stereotype.Service;
-import pro.lukasgorny.util.Commons;
-
 import java.io.FileWriter;
 import java.io.IOException;
+import org.apache.jena.rdf.model.Model;
+import org.springframework.stereotype.Service;
+
+import pro.lukasgorny.util.Commons;
 
 @Service
 public class FileService {

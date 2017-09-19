@@ -1,5 +1,6 @@
 package pro.lukasgorny.controller;
 
+import java.util.List;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,8 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 import pro.lukasgorny.model.dto.ResultDeviceDto;
 import pro.lukasgorny.model.dto.SurveyDto;
 import pro.lukasgorny.service.ReasonerService;
-
-import java.util.List;
 
 @Controller
 public class IndexController {

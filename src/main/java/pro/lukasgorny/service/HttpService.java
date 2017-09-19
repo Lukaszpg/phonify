@@ -1,8 +1,5 @@
 package pro.lukasgorny.service;
 
-import org.springframework.stereotype.Service;
-import pro.lukasgorny.util.Commons;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +7,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import org.springframework.stereotype.Service;
+
+import pro.lukasgorny.util.Commons;
 
 @Service
 public class HttpService {
