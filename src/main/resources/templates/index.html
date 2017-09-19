@@ -2,84 +2,84 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <title>Projekt ZTI</title>
-    <meta charset="utf-8"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" media="all"
-          href="/css/main.css" th:href="@{/css/main.css}"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
+<head th:replace="head"></head>
 
 <body>
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" th:href="@{/}">Projekt ZTI</a>
-        </div>
-        <ul class="nav navbar-nav">
-            <li class="active"><a th:href="@{/}">Home</a></li>
-            <li class="active"><a th:href="@{/parser}">Parser</a></li>
-        </ul>
-    </div>
-</nav>
+<nav th:replace="navbar"></nav>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-12">
             <div class="page-header">
-                <h1>Wybór preferencji użytkownika</h1>
+                <h1 th:text="#{label.preferences}"></h1>
             </div>
             <form action="#" class="form-horizontal" th:action="@{/result}" th:object="${survey}" method="post">
-                <p>1. Rozmiar ekranu</p>
-                <input type="radio" th:field="*{screenSize}" th:value="small" th:required="required"/>
-                <label th:for="${#ids.next('screenSize')}" th:text="Mały"></label>
-                <input type="radio" th:field="*{screenSize}" th:value="medium"/>
-                <label th:for="${#ids.next('screenSize')}" th:text="Średni"></label>
-                <input type="radio" th:field="*{screenSize}" th:value="big"/>
-                <label th:for="${#ids.next('screenSize')}" th:text="Duży"></label><br/>
-                <p>2. Rozmiar pamięci wewnętrznej</p>
-                <input type="radio" th:field="*{internalMemorySize}" th:value="small" th:required="required"/>
-                <label th:for="${#ids.next('internalMemorySize')}" th:text="Mała"></label>
-                <input type="radio" th:field="*{internalMemorySize}" th:value="medium"/>
-                <label th:for="${#ids.next('internalMemorySize')}" th:text="Średnia"></label>
-                <input type="radio" th:field="*{internalMemorySize}" th:value="big"/>
-                <label th:for="${#ids.next('internalMemorySize')}" th:text="Duża"></label>
-                <p>3. Czy urządzenie powinno posiadać jack 3.5 mm?</p>
-                <input type="radio" th:field="*{musicJack}" th:value="yes" th:required="required"/>
-                <label th:for="${#ids.next('musicJack')}" th:text="Tak"></label>
-                <input type="radio" th:field="*{musicJack}" th:value="no"/>
-                <label th:for="${#ids.next('musicJack')}" th:text="Nie"></label>
-                <p>4. Czy urządzenie powinno posiadać podwójną kamerę główną?</p>
-                <label th:for="${#ids.next('dualCamera')}" th:text="Tak"></label>
-                <input type="radio" th:field="*{dualCamera}" th:value="yes" th:required="required"/>
-                <label th:for="${#ids.next('dualCamera')}" th:text="Nie"></label>
-                <input type="radio" th:field="*{dualCamera}" th:value="no"/>
-                <p>5. Jakość aparatu głównego</p>
-                <input type="radio" th:field="*{primaryCameraQuality}" th:value="average" th:required="required"/>
-                <label th:for="${#ids.next('primaryCameraQuality')}" th:text="#{label.average}"></label>
-                <input type="radio" th:field="*{primaryCameraQuality}" th:value="good"/>
-                <label th:for="${#ids.next('primaryCameraQuality')}" th:text="#{label.good}"></label>
-                <input type="radio" th:field="*{primaryCameraQuality}" th:value="very_good"/>
-                <label th:for="${#ids.next('primaryCameraQuality')}" th:text="#{label.very_good}"></label>
-                <p>6. Czy urządzenie powinno posiadać opcję dual-sim?</p>
-                <label th:for="${#ids.next('hasDualSim')}" th:text="Tak"></label>
-                <input type="radio" th:field="*{hasDualSim}" th:value="yes" th:required="required"/>
-                <label th:for="${#ids.next('hasDualSim')}" th:text="Nie"></label>
-                <input type="radio" th:field="*{hasDualSim}" th:value="no"/>
+                <span th:text="#{question.one}"></span><span class="label label-info margin-left-5" data-toggle="tooltip"
+                                                                       th:title="#{tooltip.screen}" data-placement="right">Info</span>
+                <p class="margin-top-5">
+                    <input type="radio" th:field="*{screenSize}" th:value="small" th:required="required"/>
+                    <label th:for="${#ids.next('screenSize')}" th:text="#{label.small}"></label><br/>
+                    <input type="radio" th:field="*{screenSize}" th:value="medium"/>
+                    <label th:for="${#ids.next('screenSize')}" th:text="#{label.medium}"></label><br/>
+                    <input type="radio" th:field="*{screenSize}" th:value="big"/>
+                    <label th:for="${#ids.next('screenSize')}" th:text="#{label.big}"></label><br/>
+                </p>
+                <span th:text="#{question.two}"></span><span class="label label-info margin-left-5" data-toggle="tooltip"
+                                                                                    th:title="#{tooltip.memory}" data-placement="right">Info</span>
+                <p class="margin-top-5">
+                    <input type="radio" th:field="*{internalMemorySize}" th:value="small" th:required="required"/>
+                    <label th:for="${#ids.next('internalMemorySize')}" th:text="#{label.small.a}"></label><br/>
+                    <input type="radio" th:field="*{internalMemorySize}" th:value="medium"/>
+                    <label th:for="${#ids.next('internalMemorySize')}" th:text="#{label.medium.a}"></label><br/>
+                    <input type="radio" th:field="*{internalMemorySize}" th:value="big"/>
+                    <label th:for="${#ids.next('internalMemorySize')}" th:text="#{label.big.a}"></label><br/>
+                </p>
+
+                <p th:text="#{question.three}"></p>
+                <p class="margin-top-5">
+                    <input type="radio" th:field="*{musicJack}" th:value="yes" th:required="required"/>
+                    <label th:for="${#ids.next('musicJack')}" th:text="#{label.yes}"></label><br/>
+                    <input type="radio" th:field="*{musicJack}" th:value="no"/>
+                    <label th:for="${#ids.next('musicJack')}" th:text="#{label.no}"></label><br/>
+                </p>
+
+                <p th:text="#{question.four}"></p>
+                <p class="margin-top-5">
+                    <input type="radio" th:field="*{dualCamera}" th:value="yes" th:required="required"/>
+                    <label th:for="${#ids.next('dualCamera')}" th:text="#{label.yes}"></label><br/>
+                    <input type="radio" th:field="*{dualCamera}" th:value="no"/>
+                    <label th:for="${#ids.next('dualCamera')}" th:text="#{label.no}"></label><br/>
+                </p>
+
+                <p th:text="#{question.five}"></p>
+                <p class="margin-top-5">
+                    <input type="radio" th:field="*{primaryCameraQuality}" th:value="average" th:required="required"/>
+                    <label th:for="${#ids.next('primaryCameraQuality')}" th:text="#{label.average}"></label><br/>
+                    <input type="radio" th:field="*{primaryCameraQuality}" th:value="good"/>
+                    <label th:for="${#ids.next('primaryCameraQuality')}" th:text="#{label.good}"></label><br/>
+                    <input type="radio" th:field="*{primaryCameraQuality}" th:value="very_good"/>
+                    <label th:for="${#ids.next('primaryCameraQuality')}" th:text="#{label.very_good}"></label><br/>
+                </p>
+                <span th:text="#{question.six}"></span><span class="label label-info margin-left-5" data-toggle="tooltip"
+                                                             th:title="#{tooltip.dual_sim}" data-placement="right">Info</span>
+                <p class="margin-top-5">
+                    <input type="radio" th:field="*{hasDualSim}" th:value="yes" th:required="required"/>
+                    <label th:for="${#ids.next('hasDualSim')}" th:text="#{label.yes}"></label><br/>
+                    <input type="radio" th:field="*{hasDualSim}" th:value="no"/>
+                    <label th:for="${#ids.next('hasDualSim')}" th:text="#{label.no}"></label><br/>
+                </p>
                 <p>
-                    <hr />
-                    <input class="btn btn-lg btn-success pull-right margin-left-5" type="submit" value="Wyślij"/>
-                    <input class="btn btn-primary btn-lg pull-right" type="reset" value="Wyczyść"/>
+                <hr/>
+                <button class="btn btn-lg btn-success pull-right margin-left-5" type="submit">
+                    Wyślij&nbsp;<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                </button>
+                <button class="btn btn-primary btn-lg pull-right" type="reset">
+                    Wyczyść&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                </button>
                 </p>
             </form>
         </div>
     </div>
 </div>
-<footer class="footer">
-    <div class="container">
-        <p class="text-muted margin-top-20">&copy Copyright 2017 Adam Bojarski, Łukasz Górny</p>
-    </div>
-</footer>
+<footer th:replace="footer"></footer>
 </body>
 </html>

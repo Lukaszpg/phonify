@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="head"></head>
+
+<body>
+<nav th:replace="navbar"></nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-12">
+            <div class="page-header">
+                <h1 th:text="#{header.method.not.allowed}"></h1>
+            </div>
+            <p th:text="#{label.error.not.allowed}"></p>
+            <p>
+            <hr/>
+            <a th:href="@{/}" class="btn btn-primary btn-lg pull-right"><span class="glyphicon glyphicon-menu-left"></span>Wróć</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+<footer th:replace="footer"></footer>
+</body>
+</html>

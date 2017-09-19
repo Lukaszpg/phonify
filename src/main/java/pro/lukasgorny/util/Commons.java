@@ -16,6 +16,7 @@ public class Commons {
         public static String YEAR_IN_DEVICE_NAME = " [(][0-9]*[)]";
         public static String PRIMARY_CAMERA_DUAL = "Dual *";
         public static String PRIMARY_CAMERA_MP = " *MP *.*";
+        public static String TABLET_NAME = "\\btab|\\btablet|\\bpad|\\biPad\\b|\\bPad|\\bTab|\\bTablet";
         public static String ALL_WHITESPACE = "\\s+";
     }
 }

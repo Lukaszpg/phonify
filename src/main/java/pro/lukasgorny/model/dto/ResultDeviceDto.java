@@ -12,6 +12,7 @@ public class ResultDeviceDto {
     private String hasDualCamera;
     private String primaryCameraQuality;
     private String hasDualSim;
+    private String isTablet;
 
     public String getScreenSize() {
         return screenSize;
@@ -75,5 +76,13 @@ public class ResultDeviceDto {
 
     public void setHasDualSim(String hasDualSim) {
         this.hasDualSim = hasDualSim;
+    }
+
+    public String getIsTablet() {
+        return isTablet;
+    }
+
+    public void setIsTablet(String isTablet) {
+        this.isTablet = isTablet;
     }
 }

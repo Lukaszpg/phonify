@@ -38,4 +38,6 @@ public class DeviceDto {
     public String internalMemoryUnit;
 
     public String screenSizeNumeric;
+
+    public String isTablet;
 }

@@ -2,36 +2,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <title>Parser</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" media="all"
-          href="/css/main.css" th:href="@{/css/main.css}"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
+<head th:replace="head"></head>
 
 <body>
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" th:href="@{/}">Projekt ZTI</a>
-        </div>
-        <ul class="nav navbar-nav">
-            <li class="active"><a th:href="@{/}">Home</a></li>
-            <li class="active"><a th:href="@{/parser}">Parser</a></li>
-        </ul>
-    </div>
-</nav>
+<nav th:replace="navbar"></nav>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-12">
             <div class="page-header">
                 <h1 th:text="#{header.results}"></h1>
             </div>
-            <table class="table table-hover table-bordered">
-                <thead>
+            <div th:if="${not #lists.isEmpty(devices)}">
+                <table class="table table-hover table-bordered">
+                    <thead>
                     <th th:text="#{table.header.number}"></th>
                     <th th:text="#{table.header.model}"></th>
                     <th th:text="#{table.header.screen.size}"></th>
@@ -40,9 +23,10 @@
                     <th th:text="#{table.header.has_dual_camera}"></th>
                     <th th:text="#{table.header.primary_camera_quality}"></th>
                     <th th:text="#{table.header.has_dual_sim}"></th>
+                    <th th:text="#{table.header.is_tablet}"></th>
                     <th th:text="#{table.header.search}"></th>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     <tr th:each="phone,iter : ${devices}">
                         <td class="col-xs-1" th:text="${iter.index + 1}"></td>
                         <td th:text="${phone.deviceName}"></td>
@@ -52,17 +36,25 @@
                         <td th:text="#{label. + ${phone.hasDualCamera}}"></td>
                         <td th:text="#{label. + ${phone.primaryCameraQuality}}"></td>
                         <td th:text="#{label. + ${phone.hasDualSim}}"></td>
-                        <td><a target="_blank" th:href="@{http://www.google.com/search?q={query} + {shopLabel}(query=${phone.deviceName}, shopLabel = 'sklep')}" th:text="#{label.search.google}"></a></td>
+                        <td th:text="#{label. + ${phone.isTablet}}"></td>
+                        <td><a target="_blank"
+                               th:href="@{http://www.google.com/search?q={query} + {shopLabel}(query=${phone.deviceName}, shopLabel = 'sklep')}"
+                               th:text="#{label.search.google}"></a></td>
                     </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${#lists.isEmpty(devices)}">
+                <p th:text="#{label.no.devices}"></p>
+            </div>
+            <p>
+            <hr/>
+            <a th:href="@{/}" class="btn btn-primary btn-lg pull-right"><span class="glyphicon glyphicon-menu-left"></span>Wróć</a>
+            </p>
+
         </div>
     </div>
 </div>
-<footer class="footer">
-    <div class="container">
-        <p class="text-muted margin-top-20">&copy Copyright 2017 Adam Bojarski, Łukasz Górny</p>
-    </div>
-</footer>
+<footer th:replace="footer"></footer>
 </body>
 </html>

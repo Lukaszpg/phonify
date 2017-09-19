@@ -47,7 +47,7 @@ public class ReasonerService {
 
     private Query prepareQueryBody() throws ParseException {
         String queryString = "PREFIX feature: <https://lukasgorny.pro/devices#>" +
-                "SELECT ?deviceName ?memoryNumeric ?screenSizeNumeric ?memoryUnit ?jack ?primaryCameraQuality ?hasDualCamera ?hasDualSim WHERE { ?x feature:device-name ?deviceName ;" +
+                "SELECT ?deviceName ?memoryNumeric ?screenSizeNumeric ?memoryUnit ?jack ?primaryCameraQuality ?hasDualCamera ?hasDualSim ?isTablet WHERE { ?x feature:device-name ?deviceName ;" +
                 " feature:internal-memory-size-numeric ?memoryNumeric ;" +
                 " feature:screen-size-numeric ?screenSizeNumeric ;" +
                 " feature:internal-memory-unit ?memoryUnit ;" +
@@ -56,6 +56,7 @@ public class ReasonerService {
                 " feature:primary-camera-quality ?primaryCameraQuality ;" +
                 " feature:has-dual-camera ?hasDualCamera ;" +
                 " feature:has-dual-sim ?hasDualSim ;" +
+                " feature:is-tablet ?isTablet ;" +
                 " feature:internal-memory-size ?memorySize" +
                 buildFilter()
                 + " }";
@@ -111,6 +112,7 @@ public class ReasonerService {
         Literal hasDualCamera = querySolution.getLiteral("hasDualCamera");
         Literal primaryCameraQuality = querySolution.getLiteral("primaryCameraQuality");
         Literal hasDualSim = querySolution.getLiteral("hasDualSim");
+        Literal isTablet = querySolution.getLiteral("isTablet");
 
         returnDto.setDeviceName(deviceName.toString());
         returnDto.setMemorySize(memorySize.toString());
@@ -120,6 +122,7 @@ public class ReasonerService {
         returnDto.setHasDualCamera(hasDualCamera.toString());
         returnDto.setPrimaryCameraQuality(primaryCameraQuality.toString());
         returnDto.setHasDualSim(hasDualSim.toString());
+        returnDto.setIsTablet(isTablet.toString());
 
         return returnDto;
     }

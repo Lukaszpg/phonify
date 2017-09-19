@@ -5,6 +5,9 @@ package pro.lukasgorny.util.enums;
  */
 public enum Brands {
     Apple,
-    Xiaomi
-
+    Xiaomi,
+    vivo,
+    Lenovo,
+    Micromax,
+    Coolpad
 }

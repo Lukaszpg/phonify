@@ -7,6 +7,8 @@ public class ImportStatsDto {
 
     private Double importTime;
     private Integer count;
+    private Integer countPhone;
+    private Integer countTablet;
 
     public Double getImportTime() {
         return importTime;
@@ -22,5 +24,21 @@ public class ImportStatsDto {
 
     public void setCount(Integer count) {
         this.count = count;
+    }
+
+    public Integer getCountPhone() {
+        return countPhone;
+    }
+
+    public void setCountPhone(Integer countPhone) {
+        this.countPhone = countPhone;
+    }
+
+    public Integer getCountTablet() {
+        return countTablet;
+    }
+
+    public void setCountTablet(Integer countTablet) {
+        this.countTablet = countTablet;
     }
 }

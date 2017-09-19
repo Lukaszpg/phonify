@@ -1,13 +1,20 @@
 package pro.lukasgorny.service;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import pro.lukasgorny.model.dto.DeviceDto;
 import pro.lukasgorny.model.dto.ImportStatsDto;
 import pro.lukasgorny.util.Commons;
@@ -17,11 +24,6 @@ import pro.lukasgorny.util.enums.CameraMatrix;
 import pro.lukasgorny.util.enums.InternalMemorySize;
 import pro.lukasgorny.util.enums.ScreenSize;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Service
 public class ParserService {
 
@@ -29,7 +31,8 @@ public class ParserService {
     private FileService fileService;
     private long startTime;
     private long endTime;
-    private Integer parseCount;
+    private Integer tabletCount;
+    private Integer phoneCount;
 
     private List<DeviceDto> devices;
     private String response;
@@ -56,7 +59,8 @@ public class ParserService {
     }
 
     private void initialize() {
-        parseCount = 0;
+        phoneCount = 0;
+        tabletCount = 0;
     }
 
     private void getDevicesFromMultipleBrands() {
@@ -101,13 +105,21 @@ public class ParserService {
                     createSingleDevice(deviceDto);
                 }
 
-                parseCount++;
+                countTabletOrPhone(deviceDto);
             }
         });
     }
 
+    private void countTabletOrPhone(DeviceDto deviceDto) {
+        if(deviceDto.isTablet.equals("yes")) {
+            tabletCount++;
+        } else {
+            phoneCount++;
+        }
+    }
+
     private boolean isDeviceDiscontinued(DeviceDto deviceDto) {
-        return StringUtils.containsIgnoreCase("discontinued", deviceDto.status);
+        return StringUtils.containsIgnoreCase(deviceDto.status, "discontinued");
     }
 
     private void createMultipleDevices(DeviceDto deviceDto) {
@@ -131,6 +143,7 @@ public class ParserService {
             someDevice.addProperty(JenaProperties.screenSizeNumeric, deviceDto.screenSizeNumeric);
             someDevice.addProperty(JenaProperties.screenSize, deviceDto.screenSizeString);
             someDevice.addProperty(JenaProperties.internalMemoryUnit, deviceDto.internalMemoryUnit);
+            someDevice.addProperty(JenaProperties.isTablet, deviceDto.isTablet);
 
             if (deviceDto.internalMemoryUnit.equals("GB")) {
                 someDevice.addProperty(JenaProperties.deviceName,
@@ -165,6 +178,7 @@ public class ParserService {
         someDevice.addProperty(JenaProperties.screenSize, deviceDto.screenSizeString);
         someDevice.addProperty(JenaProperties.screenSizeNumeric, deviceDto.screenSizeNumeric);
         someDevice.addProperty(JenaProperties.deviceName, deviceDto.deviceName);
+        someDevice.addProperty(JenaProperties.isTablet, deviceDto.isTablet);
     }
 
     private void writeModelToFile() {
@@ -198,13 +212,20 @@ public class ParserService {
                 deviceDto.dualSim = doesDeviceHaveDualSim(deviceDto.dualSim);
             }
 
+            deviceDto.isTablet = isDeviceATablet(deviceDto.deviceName);
             deviceDto = prepareInternalMemoryList(deviceDto);
         });
         return devices;
     }
 
+    private String isDeviceATablet(String deviceName) {
+        Pattern nameRegex = Pattern.compile(Commons.Regex.TABLET_NAME);
+        Matcher matcher = nameRegex.matcher(deviceName);
+        return matcher.find() ? "yes" : "no";
+    }
+
     private String doesDeviceHaveDualSim(String sim) {
-        return StringUtils.containsIgnoreCase("dual", sim) ? "yes" : "no";
+        return StringUtils.containsIgnoreCase(sim, "dual") ? "yes" : "no";
     }
 
     private String getScreenSizeNumeric(String screenSizeString) {
@@ -230,7 +251,7 @@ public class ParserService {
     }
 
     private String doesDeviceHaveDualCamera(String primaryCamera) {
-        return StringUtils.containsIgnoreCase("dual", primaryCamera) ? "yes" : "no";
+        return StringUtils.containsIgnoreCase(primaryCamera, "dual") ? "yes" : "no";
     }
 
     private DeviceDto prepareInternalMemoryList(DeviceDto deviceDto) {
@@ -280,6 +301,10 @@ public class ParserService {
         primaryCamera = primaryCameraSplit[0].replaceAll(Commons.Regex.PRIMARY_CAMERA_DUAL, "");
         primaryCamera = primaryCamera.replaceAll(Commons.Regex.PRIMARY_CAMERA_MP, "");
 
+        if(StringUtils.containsIgnoreCase(primaryCamera, "vga")) {
+            return CameraMatrix.average.name();
+        }
+
         Double matrixSize = Double.valueOf(primaryCamera);
 
         if(matrixSize <= 4.0) {
@@ -302,7 +327,9 @@ public class ParserService {
     private void prepareReturnDto() {
         importStatsDto = new ImportStatsDto();
         importStatsDto.setImportTime(calculateExecutionTime());
-        importStatsDto.setCount(parseCount);
+        importStatsDto.setCount(phoneCount + tabletCount);
+        importStatsDto.setCountPhone(phoneCount);
+        importStatsDto.setCountTablet(tabletCount);
     }
 
     private Double calculateExecutionTime() {
