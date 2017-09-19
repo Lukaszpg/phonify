@@ -29,6 +29,7 @@ public class ParserService {
 
     private HttpService httpService;
     private FileService fileService;
+
     private long startTime;
     private long endTime;
     private Integer tabletCount;
@@ -63,6 +64,19 @@ public class ParserService {
         tabletCount = 0;
     }
 
+    private void startTimer() {
+        startTime = System.currentTimeMillis();
+    }
+
+    private void stopTimer() {
+        endTime = System.currentTimeMillis();
+    }
+
+    private void createJenaModel() {
+        model = ModelFactory.createDefaultModel();
+        model.setNsPrefix(Commons.Label.FEATURE, Commons.RDF_NAMESPACE);
+    }
+
     private void getDevicesFromMultipleBrands() {
         for (Brands brand : Brands.values()) {
             sendRequestsToApi(brand.name());
@@ -91,14 +105,9 @@ public class ParserService {
         devices = setDevicesFields(devices);
     }
 
-    private void createJenaModel() {
-        model = ModelFactory.createDefaultModel();
-        model.setNsPrefix("feature", Commons.RDF_NAMESPACE);
-    }
-
     private void populateModel() {
         devices.forEach(deviceDto -> {
-            if(!isDeviceDiscontinued(deviceDto)) {
+            if (!isDeviceDiscontinued(deviceDto)) {
                 if (deviceDto.internalMemorySizes != null && deviceDto.internalMemorySizes.size() > 1) {
                     createMultipleDevices(deviceDto);
                 } else {
@@ -111,74 +120,102 @@ public class ParserService {
     }
 
     private void countTabletOrPhone(DeviceDto deviceDto) {
-        if(deviceDto.isTablet.equals("yes")) {
+        if (deviceDto.isTablet.equals(Commons.Label.YES)) {
             tabletCount++;
         } else {
             phoneCount++;
         }
     }
 
-    private boolean isDeviceDiscontinued(DeviceDto deviceDto) {
-        return StringUtils.containsIgnoreCase(deviceDto.status, "discontinued");
+    private void createSingleDevice(DeviceDto deviceDto) {
+        Resource someDevice = model.createResource(prepareRdfDescriptionForSingleDevice(deviceDto));
+
+        someDevice.addProperty(JenaProperties.deviceName, deviceDto.deviceName);
+
+        someDevice = addCommonProperties(someDevice, deviceDto);
+        someDevice = addPrimaryCameraProperties(someDevice, deviceDto);
+
+        if (deviceDto.internalMemorySizes != null) {
+            someDevice = addMemoryPropertiesToSingleDevice(someDevice, deviceDto);
+        }
     }
 
     private void createMultipleDevices(DeviceDto deviceDto) {
         deviceDto.internalMemorySizes.keySet().forEach(memorySize -> {
-            Resource someDevice = model.createResource(
-                    Commons.RDF_NAMESPACE + deviceDto.deviceName.replaceAll(Commons.Regex.ALL_WHITESPACE, "") + deviceDto.internalMemorySizes
-                            .get(memorySize));
+            Resource someDevice = model.createResource(prepareRdfDescriptionForMultipleDevice(deviceDto, memorySize));
 
-            if(deviceDto.primaryCamera != null) {
-                someDevice.addProperty(JenaProperties.hasDualCamera, deviceDto.hasDualCamera);
-                someDevice.addProperty(JenaProperties.primaryCameraQuality, deviceDto.primaryCamera);
-            }
-
-            if(deviceDto.dualSim != null) {
-                someDevice.addProperty(JenaProperties.hasDualSim, deviceDto.dualSim);
-            }
-
-            someDevice.addProperty(JenaProperties.musicJack, deviceDto.musicJack);
-            someDevice.addProperty(JenaProperties.internalMemorySizeNumeric, deviceDto.internalMemorySizes.get(memorySize));
-            someDevice.addProperty(JenaProperties.internalMemorySize, memorySize);
-            someDevice.addProperty(JenaProperties.screenSizeNumeric, deviceDto.screenSizeNumeric);
-            someDevice.addProperty(JenaProperties.screenSize, deviceDto.screenSizeString);
-            someDevice.addProperty(JenaProperties.internalMemoryUnit, deviceDto.internalMemoryUnit);
-            someDevice.addProperty(JenaProperties.isTablet, deviceDto.isTablet);
-
-            if (deviceDto.internalMemoryUnit.equals("GB")) {
-                someDevice.addProperty(JenaProperties.deviceName,
-                        deviceDto.deviceName + " " + deviceDto.internalMemorySizes.get(memorySize) + deviceDto.internalMemoryUnit);
-            } else {
-                someDevice.addProperty(JenaProperties.deviceName, deviceDto.deviceName + " " + deviceDto.internalMemorySizes.get(memorySize));
-            }
+            someDevice = addCommonProperties(someDevice, deviceDto);
+            someDevice = addPrimaryCameraProperties(someDevice, deviceDto);
+            someDevice = addMemoryPropertiesToMultipleDevice(someDevice, deviceDto, memorySize);
+            someDevice = prepareMultiDeviceName(someDevice, deviceDto, memorySize);
         });
     }
 
-    private void createSingleDevice(DeviceDto deviceDto) {
-        Resource someDevice = model.createResource(Commons.RDF_NAMESPACE + deviceDto.deviceName.replaceAll(Commons.Regex.ALL_WHITESPACE, ""));
-
-        if (deviceDto.internalMemorySizes != null) {
-            String memoryToAdd = deviceDto.internalMemorySizes.keySet().stream().findFirst().get();
-            String memoryNumeric = deviceDto.internalMemorySizes.values().stream().findFirst().get();
-            someDevice.addProperty(JenaProperties.internalMemorySizeNumeric, memoryNumeric);
-            someDevice.addProperty(JenaProperties.internalMemorySize, memoryToAdd);
-            someDevice.addProperty(JenaProperties.internalMemoryUnit, deviceDto.internalMemoryUnit);
+    private Resource prepareMultiDeviceName(Resource someDevice, DeviceDto deviceDto, String memorySize) {
+        if (deviceDto.internalMemoryUnit.equals(Commons.Label.GB)) {
+            someDevice.addProperty(JenaProperties.deviceName, prepareDeviceNameWithMemory(deviceDto, memorySize));
+        } else {
+            someDevice.addProperty(JenaProperties.deviceName, deviceDto.deviceName + " " + deviceDto.internalMemorySizes.get(memorySize));
         }
 
-        if(deviceDto.primaryCamera != null) {
+        return someDevice;
+    }
+
+    private String prepareRdfDescriptionForSingleDevice(DeviceDto deviceDto) {
+        return Commons.RDF_NAMESPACE + deviceDto.deviceName.replaceAll(Commons.Regex.ALL_WHITESPACE, "");
+    }
+
+    private String prepareRdfDescriptionForMultipleDevice(DeviceDto deviceDto, String memorySize) {
+        return Commons.RDF_NAMESPACE + deviceDto.deviceName.replaceAll(Commons.Regex.ALL_WHITESPACE, "") + deviceDto.internalMemorySizes
+                .get(memorySize);
+    }
+
+    private Resource addPrimaryCameraProperties(Resource someDevice, DeviceDto deviceDto) {
+        if (deviceDto.primaryCamera != null) {
             someDevice.addProperty(JenaProperties.hasDualCamera, deviceDto.hasDualCamera);
             someDevice.addProperty(JenaProperties.primaryCameraQuality, deviceDto.primaryCamera);
         }
 
-        if(deviceDto.dualSim != null) {
-            someDevice.addProperty(JenaProperties.hasDualSim, deviceDto.dualSim);
-        }
+        return someDevice;
+    }
 
+    private Resource addMemoryPropertiesToSingleDevice(Resource someDevice, DeviceDto deviceDto) {
+        String memoryToAdd = deviceDto.internalMemorySizes.keySet().stream().findFirst().get();
+        String memoryNumeric = deviceDto.internalMemorySizes.values().stream().findFirst().get();
+        someDevice.addProperty(JenaProperties.internalMemorySizeNumeric, memoryNumeric);
+        someDevice.addProperty(JenaProperties.internalMemorySize, memoryToAdd);
+        someDevice.addProperty(JenaProperties.internalMemoryUnit, deviceDto.internalMemoryUnit);
+
+        return someDevice;
+    }
+
+    private Resource addMemoryPropertiesToMultipleDevice(Resource someDevice, DeviceDto deviceDto, String memorySize) {
+        someDevice.addProperty(JenaProperties.internalMemorySizeNumeric, deviceDto.internalMemorySizes.get(memorySize));
+        someDevice.addProperty(JenaProperties.internalMemorySize, memorySize);
+        someDevice.addProperty(JenaProperties.internalMemoryUnit, deviceDto.internalMemoryUnit);
+
+        return someDevice;
+    }
+
+    private String prepareDeviceNameWithMemory(DeviceDto deviceDto, String memorySize) {
+        return deviceDto.deviceName + " " + deviceDto.internalMemorySizes.get(memorySize) + deviceDto.internalMemoryUnit;
+    }
+
+    private boolean isDeviceDiscontinued(DeviceDto deviceDto) {
+        return StringUtils.containsIgnoreCase(deviceDto.status, Commons.Label.DISCONTINUED);
+    }
+
+    private Resource addCommonProperties(Resource someDevice, DeviceDto deviceDto) {
         someDevice.addProperty(JenaProperties.musicJack, deviceDto.musicJack);
         someDevice.addProperty(JenaProperties.screenSize, deviceDto.screenSizeString);
         someDevice.addProperty(JenaProperties.screenSizeNumeric, deviceDto.screenSizeNumeric);
-        someDevice.addProperty(JenaProperties.deviceName, deviceDto.deviceName);
         someDevice.addProperty(JenaProperties.isTablet, deviceDto.isTablet);
+
+        if (deviceDto.dualSim != null) {
+            someDevice.addProperty(JenaProperties.hasDualSim, deviceDto.dualSim);
+        }
+
+        return someDevice;
     }
 
     private void writeModelToFile() {
@@ -199,16 +236,16 @@ public class ParserService {
             deviceDto.screenSizeNumeric = getScreenSizeNumeric(deviceDto.screenSizeString);
             deviceDto.screenSizeString = calculateScreenSize(deviceDto.screenSizeString);
 
-            if(deviceDto.musicJack != null) {
+            if (deviceDto.musicJack != null) {
                 deviceDto.musicJack = doesDeviceHaveJack(deviceDto.musicJack);
             }
 
-            if(deviceDto.primaryCamera != null) {
+            if (deviceDto.primaryCamera != null) {
                 deviceDto.hasDualCamera = doesDeviceHaveDualCamera(deviceDto.primaryCamera);
                 deviceDto.primaryCamera = calculatePrimaryCameraMatrixSize(deviceDto.primaryCamera);
             }
 
-            if(deviceDto.dualSim != null) {
+            if (deviceDto.dualSim != null) {
                 deviceDto.dualSim = doesDeviceHaveDualSim(deviceDto.dualSim);
             }
 
@@ -221,11 +258,11 @@ public class ParserService {
     private String isDeviceATablet(String deviceName) {
         Pattern nameRegex = Pattern.compile(Commons.Regex.TABLET_NAME);
         Matcher matcher = nameRegex.matcher(deviceName);
-        return matcher.find() ? "yes" : "no";
+        return matcher.find() ? Commons.Label.YES : Commons.Label.NO;
     }
 
     private String doesDeviceHaveDualSim(String sim) {
-        return StringUtils.containsIgnoreCase(sim, "dual") ? "yes" : "no";
+        return StringUtils.containsIgnoreCase(sim, Commons.Label.DUAL) ? Commons.Label.YES : Commons.Label.NO;
     }
 
     private String getScreenSizeNumeric(String screenSizeString) {
@@ -247,11 +284,11 @@ public class ParserService {
     }
 
     private String doesDeviceHaveJack(String musicJack) {
-        return StringUtils.containsIgnoreCase(musicJack, "yes") ? "yes" : "no";
+        return StringUtils.containsIgnoreCase(musicJack, Commons.Label.YES) ? Commons.Label.YES : Commons.Label.NO;
     }
 
     private String doesDeviceHaveDualCamera(String primaryCamera) {
-        return StringUtils.containsIgnoreCase(primaryCamera, "dual") ? "yes" : "no";
+        return StringUtils.containsIgnoreCase(primaryCamera, Commons.Label.DUAL) ? Commons.Label.YES : Commons.Label.NO;
     }
 
     private DeviceDto prepareInternalMemoryList(DeviceDto deviceDto) {
@@ -268,10 +305,10 @@ public class ParserService {
             for (String memorySize : memorySizes) {
                 if (shouldCalculateAsGigabytes) {
                     resultMap.put(calculateInternalMemorySizeAsGigabytes(Double.valueOf(memorySize)), memorySize);
-                    deviceDto.internalMemoryUnit = "GB";
+                    deviceDto.internalMemoryUnit = Commons.Label.GB;
                 } else {
                     resultMap.put(calculateInternalMemorySizeAsMegabytes(Double.valueOf(memorySize)), memorySize);
-                    deviceDto.internalMemoryUnit = "MB";
+                    deviceDto.internalMemoryUnit = Commons.Label.MB;
                 }
             }
 
@@ -282,7 +319,7 @@ public class ParserService {
     }
 
     private boolean shouldCalculateAsGigabytes(String memoryString) {
-        return memoryString.contains("GB");
+        return memoryString.contains(Commons.Label.GB);
     }
 
     private String calculateInternalMemorySizeAsGigabytes(Double memorySize) {
@@ -301,27 +338,19 @@ public class ParserService {
         primaryCamera = primaryCameraSplit[0].replaceAll(Commons.Regex.PRIMARY_CAMERA_DUAL, "");
         primaryCamera = primaryCamera.replaceAll(Commons.Regex.PRIMARY_CAMERA_MP, "");
 
-        if(StringUtils.containsIgnoreCase(primaryCamera, "vga")) {
+        if (StringUtils.containsIgnoreCase(primaryCamera, Commons.Label.VGA)) {
             return CameraMatrix.average.name();
         }
 
         Double matrixSize = Double.valueOf(primaryCamera);
 
-        if(matrixSize <= 4.0) {
+        if (matrixSize <= 4.0) {
             return CameraMatrix.average.name();
-        } else if(matrixSize > 4.0 && matrixSize <= 8.0) {
+        } else if (matrixSize > 4.0 && matrixSize <= 8.0) {
             return CameraMatrix.good.name();
         } else {
             return CameraMatrix.very_good.name();
         }
-    }
-
-    private void startTimer() {
-        startTime = System.currentTimeMillis();
-    }
-
-    private void stopTimer() {
-        endTime = System.currentTimeMillis();
     }
 
     private void prepareReturnDto() {

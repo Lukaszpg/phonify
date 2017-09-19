@@ -1,8 +1,5 @@
 package pro.lukasgorny.util;
 
-/**
- * Created by lukaszgo on 2017-09-12.
- */
 public class Commons {
     public static final String RDF_NAMESPACE = "https://lukasgorny.pro/devices#";
     public static final String RDF_FILENAME = "devices.rdf";
@@ -18,5 +15,16 @@ public class Commons {
         public static String PRIMARY_CAMERA_MP = " *MP *.*";
         public static String TABLET_NAME = "\\btab|\\btablet|\\bpad|\\biPad\\b|\\bPad|\\bTab|\\bTablet";
         public static String ALL_WHITESPACE = "\\s+";
+    }
+
+    public static class Label {
+        public static String YES = "yes";
+        public static String NO = "no";
+        public static String VGA = "vga";
+        public static String GB = "GB";
+        public static String MB = "MB";
+        public static String DUAL = "dual";
+        public static String DISCONTINUED = "discontinued";
+        public static String FEATURE = "feature";
     }
 }

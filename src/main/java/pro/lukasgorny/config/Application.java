@@ -13,10 +13,6 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 
-/**
- * Created by lukaszgo on 2017-05-25.
- */
-
 @SpringBootApplication
 @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
 @EntityScan(basePackages = "pro.lukasgorny")

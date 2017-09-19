@@ -3,9 +3,6 @@ package pro.lukasgorny.model.dto;
 import java.util.Map;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by lukaszgo on 2017-09-12.
- */
 public class DeviceDto {
 
     @SerializedName("DeviceName")

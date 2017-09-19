@@ -1,8 +1,5 @@
 package pro.lukasgorny.model.dto;
 
-/**
- * Created by lukaszgo on 2017-09-18.
- */
 public class ResultDeviceDto {
     private String screenSize;
     private String deviceName;

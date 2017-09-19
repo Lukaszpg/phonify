@@ -9,9 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 import pro.lukasgorny.model.dto.ImportStatsDto;
 import pro.lukasgorny.service.ParserService;
 
-/**
- * Created by lukaszgo on 2017-09-12.
- */
 @Controller
 public class ParserController {
 
