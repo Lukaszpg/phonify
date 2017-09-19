@@ -276,7 +276,7 @@ public class ParserService {
 
         if (screenSizeDouble <= 3.0) {
             return ScreenSize.small.name();
-        } else if (screenSizeDouble > 3.0 && screenSizeDouble <= 4.5) {
+        } else if (screenSizeDouble > 3.0 && screenSizeDouble <= 4.9) {
             return ScreenSize.medium.name();
         } else {
             return ScreenSize.big.name();
