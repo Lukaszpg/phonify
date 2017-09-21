@@ -8,7 +8,7 @@ public class Commons {
     public static final String RDF_TYPE = "RDF/XML-ABBREV";
 
     public static class Regex {
-        public static String SCREEN_SIZE = "( inches .*| inches)";
+        public static String SCREEN_SIZE = " *inches *.*,*";
         public static String INTERNAL_MEMORY_SIZE_UNIT = " *GB| *MB";
         public static String YEAR_IN_DEVICE_NAME = " [(][0-9]*[)]";
         public static String PRIMARY_CAMERA_DUAL = "Dual *";
